@@ -5,13 +5,13 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 const TransactionsChart = () => {
   const data = [
-    { day: 'Mon', value: 180 },
-    { day: 'Tue', value: 120 },
-    { day: 'Wed', value: 200 },
-    { day: 'Thu', value: 150 },
-    { day: 'Fri', value: 180 },
-    { day: 'Sat', value: 160 },
-    { day: 'Sun', value: 140 },
+    { day: 'Mon', gain: 180, loss: 120 },
+    { day: 'Tue', gain: 120, loss: 80 },
+    { day: 'Wed', gain: 200, loss: 150 },
+    { day: 'Thu', gain: 150, loss: 100 },
+    { day: 'Fri', gain: 180, loss: 130 },
+    { day: 'Sat', gain: 160, loss: 110 },
+    { day: 'Sun', gain: 140, loss: 90 },
   ];
 
   return (
@@ -34,9 +34,16 @@ const TransactionsChart = () => {
               />
               <YAxis hide />
               <Bar 
-                dataKey="value" 
+                dataKey="gain" 
                 radius={[4, 4, 0, 0]}
                 fill="#3B82F6"
+                stackId="stack"
+              />
+              <Bar 
+                dataKey="loss" 
+                radius={[4, 4, 0, 0]}
+                fill="#F97316"
+                stackId="stack"
               />
             </BarChart>
           </ResponsiveContainer>
