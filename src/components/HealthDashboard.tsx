@@ -1,13 +1,12 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Activity, Heart, Bone, Tooth, User, Bell, Settings, Home } from "lucide-react";
+import { Calendar, Activity, Heart, Bone, Smile, User, Bell, Settings, Home } from "lucide-react";
 
 const HealthDashboard = () => {
   const healthMetrics = [
     { name: "Lungs", value: "25%", color: "bg-red-500", icon: Heart },
-    { name: "Teeth", value: "26%", color: "bg-green-500", icon: Tooth },
+    { name: "Teeth", value: "26%", color: "bg-green-500", icon: Smile },
     { name: "Bone", value: "27%", color: "bg-orange-500", icon: Bone },
   ];
 
