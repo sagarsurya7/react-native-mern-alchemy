@@ -21,7 +21,7 @@ export function JournalForm({ entry, onSubmit, onCancel }: JournalFormProps) {
   const [title, setTitle] = useState(entry?.title || "");
   const [content, setContent] = useState(entry?.content || "");
   const [category, setCategory] = useState(entry?.category || "");
-  const [status, setStatus] = useState(entry?.status || "draft");
+  const [status, setStatus] = useState<'draft' | 'published' | 'archived'>(entry?.status || "draft");
   const [tags, setTags] = useState<string[]>(entry?.tags || []);
   const [image, setImage] = useState<string | undefined>(entry?.image);
   const [newTag, setNewTag] = useState("");
@@ -88,7 +88,7 @@ export function JournalForm({ entry, onSubmit, onCancel }: JournalFormProps) {
       title: title.trim(),
       content: content.trim(),
       category: category || "General",
-      status: status as 'draft' | 'published' | 'archived',
+      status: status,
       tags,
       image,
     });

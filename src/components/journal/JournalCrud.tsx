@@ -13,8 +13,56 @@ import { JournalEntry } from "@/types/journal";
 import { JournalForm } from "./JournalForm";
 import { JournalList } from "./JournalList";
 
+const initialEntries: JournalEntry[] = [
+  {
+    id: "1",
+    title: "My First Trading Journal Entry",
+    content: "Today was an exciting day in the markets. I executed three trades with EURUSD, focusing on the morning volatility. The key lesson learned was patience - waiting for the right setup paid off significantly. My risk management strategy worked well, keeping losses minimal on the one losing trade.",
+    category: "Trading",
+    status: "published",
+    tags: ["forex", "trading", "EURUSD", "risk-management"],
+    createdAt: "2024-01-15T10:30:00Z",
+  },
+  {
+    id: "2", 
+    title: "Market Analysis - Tech Stocks",
+    content: "Analyzing the recent trends in technology stocks, particularly focusing on AI companies. The sector shows strong momentum but high volatility. Need to be cautious about position sizing and entry points. NVIDIA and Microsoft showing interesting patterns.",
+    category: "Analysis",
+    status: "draft",
+    tags: ["stocks", "technology", "AI", "analysis"],
+    createdAt: "2024-01-14T14:20:00Z",
+  },
+  {
+    id: "3",
+    title: "Weekly Performance Review",
+    content: "This week's performance exceeded expectations with a 5.2% gain on the portfolio. The winning trades were primarily in currency pairs, while equity positions remained flat. Need to work on improving entry timing for stock trades.",
+    category: "Performance",
+    status: "published", 
+    tags: ["weekly-review", "performance", "portfolio"],
+    createdAt: "2024-01-12T16:45:00Z",
+  },
+  {
+    id: "4",
+    title: "Bitcoin Technical Analysis",
+    content: "BTC is showing strong support at the $42,000 level. The RSI indicates oversold conditions, and we might see a bounce in the coming days. However, the overall trend remains bearish, so any long positions should be short-term.",
+    category: "Crypto",
+    status: "archived",
+    tags: ["bitcoin", "BTC", "technical-analysis", "crypto"],
+    createdAt: "2024-01-10T09:15:00Z",
+  },
+  {
+    id: "5",
+    title: "Risk Management Lessons",
+    content: "Important reminder about the 2% rule - never risk more than 2% of capital on a single trade. Today's lesson came from almost breaking this rule on a seemingly 'sure' trade. Discipline is key to long-term success.",
+    category: "Education",
+    status: "published",
+    tags: ["risk-management", "education", "discipline"],
+    createdAt: "2024-01-08T11:30:00Z",
+  }
+];
+
 export function JournalCrud() {
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [entries, setEntries] = useState<JournalEntry[]>(initialEntries);
   const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
