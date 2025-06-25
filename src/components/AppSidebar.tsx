@@ -1,5 +1,5 @@
 
-import { Calendar, BarChart3, CreditCard, TrendingUp, User, Settings, Home, BookOpen, Activity } from "lucide-react";
+import { Calendar, BarChart3, CreditCard, TrendingUp, User, Settings, Home, BookOpen, Activity, DollarSign } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -18,6 +18,7 @@ const navigationItems = [
   { name: "Finance Dashboard", icon: CreditCard, path: "/dashboard-finance", active: false },
   { name: "Journal1", icon: BookOpen, path: "/journal1", active: false },
   { name: "Daily Trade Activity", icon: Activity, path: "/daily-trade-activity", active: false },
+  { name: "Forex-BTC-Stocks", icon: DollarSign, path: "/forex-btc-stocks", active: false },
   { name: "Reports", icon: BarChart3, path: "/reports", active: false },
   { name: "Statistics", icon: TrendingUp, path: "/statistics", active: false },
   { name: "Settings", icon: Settings, path: "/settings", active: false },

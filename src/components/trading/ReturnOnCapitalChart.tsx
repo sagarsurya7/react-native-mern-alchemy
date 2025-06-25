@@ -1,41 +1,43 @@
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 const data = [
-  { period: "1", return: 2.5 },
-  { period: "2", return: 1.2 },
-  { period: "3", return: 0.8 },
-  { period: "4", return: 3.2 },
-  { period: "5", return: -0.5 },
-  { period: "6", return: 2.1 },
-  { period: "7", return: 2.8 },
-  { period: "8", return: 3.1 },
-  { period: "9", return: -1.2 },
-  { period: "10", return: 1.8 },
+  { month: "Jan", return: 12.5 },
+  { month: "Feb", return: -5.2 },
+  { month: "Mar", return: 18.7 },
+  { month: "Apr", return: 8.3 },
+  { month: "May", return: -3.1 },
+  { month: "Jun", return: 22.4 },
+  { month: "Jul", return: 15.8 },
+  { month: "Aug", return: -7.6 },
+  { month: "Sep", return: 11.2 },
+  { month: "Oct", return: 25.1 },
+  { month: "Nov", return: 9.7 },
+  { month: "Dec", return: 14.3 },
 ];
 
 const chartConfig = {
   return: {
-    label: "Return %",
-    color: "hsl(var(--chart-1))",
+    label: "Return (%)",
+    color: "#10b981",
   },
 };
 
 export function ReturnOnCapitalChart() {
   return (
     <ChartContainer config={chartConfig}>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={200}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="period" />
+          <XAxis dataKey="month" />
           <YAxis />
           <ChartTooltip content={<ChartTooltipContent />} />
-          <Bar 
-            dataKey="return" 
-            fill={(entry) => entry.return >= 0 ? "#10b981" : "#ef4444"}
-            radius={[2, 2, 0, 0]}
-          />
+          <Bar dataKey="return" radius={[4, 4, 0, 0]}>
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.return > 0 ? "#10b981" : "#ef4444"} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </ChartContainer>
