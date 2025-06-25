@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
 import DashboardFinance from "./pages/DashboardFinance";
 import Journal1 from "./pages/Journal1";
+import Journal2 from "./pages/Journal2";
 import DailyTradeActivity from "./pages/DailyTradeActivity";
 import ForexBtcStocks from "./pages/ForexBtcStocks";
 import Reports from "./pages/Reports";
@@ -30,6 +31,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/dashboard-finance" element={<DashboardFinance />} />
                 <Route path="/journal1" element={<Journal1 />} />
+                <Route path="/journal2" element={<Journal2 />} />
                 <Route path="/daily-trade-activity" element={<DailyTradeActivity />} />
                 <Route path="/forex-btc-stocks" element={<ForexBtcStocks />} />
                 <Route path="/reports" element={<Reports />} />
