@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
 import DashboardFinance from "./pages/DashboardFinance";
 import Journal1 from "./pages/Journal1";
+import DailyTradeActivity from "./pages/DailyTradeActivity";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/dashboard-finance" element={<DashboardFinance />} />
                 <Route path="/journal1" element={<Journal1 />} />
+                <Route path="/daily-trade-activity" element={<DailyTradeActivity />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
