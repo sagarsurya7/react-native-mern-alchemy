@@ -1,5 +1,5 @@
 
-import { Calendar, BarChart3, CreditCard, TrendingUp, User, Settings, Home } from "lucide-react";
+import { Calendar, BarChart3, CreditCard, TrendingUp, User, Settings, Home, BookOpen } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -16,6 +16,7 @@ import {
 const navigationItems = [
   { name: "Dashboard", icon: Home, path: "/", active: false },
   { name: "Finance Dashboard", icon: CreditCard, path: "/dashboard-finance", active: false },
+  { name: "Journal1", icon: BookOpen, path: "/journal1", active: false },
   { name: "Reports", icon: BarChart3, path: "/reports", active: false },
   { name: "Statistics", icon: TrendingUp, path: "/statistics", active: false },
   { name: "Settings", icon: Settings, path: "/settings", active: false },
