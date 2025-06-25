@@ -1,13 +1,12 @@
-
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Clipboard, X } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { JournalEntry } from "@/types/journal";
 
@@ -25,9 +24,8 @@ export function JournalForm({ entry, onSubmit, onCancel }: JournalFormProps) {
   const [tags, setTags] = useState<string[]>(entry?.tags || []);
   const [image, setImage] = useState<string | undefined>(entry?.image);
   const [newTag, setNewTag] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.type.startsWith('image/')) {
@@ -43,26 +41,11 @@ export function JournalForm({ entry, onSubmit, onCancel }: JournalFormProps) {
     }
   };
 
-  const handlePasteFromClipboard = async () => {
-    try {
-      const clipboardItems = await navigator.clipboard.read();
-      for (const clipboardItem of clipboardItems) {
-        for (const type of clipboardItem.types) {
-          if (type.startsWith('image/')) {
-            const blob = await clipboardItem.getType(type);
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              setImage(e.target?.result as string);
-              toast.success("Image pasted from clipboard!");
-            };
-            reader.readAsDataURL(blob);
-            return;
-          }
-        }
-      }
-      toast.error("No image found in clipboard");
-    } catch (error) {
-      toast.error("Failed to access clipboard. Please use the upload button instead.");
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const text = event.clipboardData.getData('text/plain');
+    if (text) {
+      setContent(text);
+      toast.success("Text pasted from clipboard!");
     }
   };
 
@@ -79,6 +62,7 @@ export function JournalForm({ entry, onSubmit, onCancel }: JournalFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!title.trim() || !content.trim()) {
       toast.error("Title and content are required");
       return;
@@ -95,197 +79,140 @@ export function JournalForm({ entry, onSubmit, onCancel }: JournalFormProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Card className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-background border rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>
-              {entry ? "Edit Journal Entry" : "Create New Journal Entry"}
-            </CardTitle>
-            <Button variant="ghost" size="sm" onClick={onCancel}>
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
+          <CardTitle>{entry ? "Edit Entry" : "New Journal Entry"}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter journal entry title"
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter title..."
+                    required
+                  />
+                </div>
 
-            <div>
-              <Label htmlFor="category">Category</Label>
-              <Input
-                id="category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                placeholder="Enter category"
-              />
-            </div>
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Input
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="e.g., Trading, Analysis, Performance..."
+                  />
+                </div>
 
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="published">Published</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <Select value={status} onValueChange={(value: 'draft' | 'published' | 'archived') => setStatus(value)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="published">Published</SelectItem>
+                      <SelectItem value="archived">Archived</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div>
-              <Label>Image</Label>
-              {!image ? (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <div className="space-y-4">
-                    <Upload className="w-12 h-12 mx-auto text-gray-400" />
-                    <div>
-                      <p className="text-gray-500 mb-4">
-                        Add an image to your journal entry
+                <div>
+                  <Label>Tags</Label>
+                  <div className="flex gap-2 mb-2">
+                    <Input
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      placeholder="Add tag..."
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    />
+                    <Button type="button" onClick={addTag} size="sm">
+                      Add
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                        {tag}
+                        <X className="w-3 h-3 cursor-pointer" onClick={() => removeTag(tag)} />
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label>Image Upload</Label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <label htmlFor="image-upload" className="cursor-pointer">
+                      <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                      <p className="text-sm text-gray-600">
+                        Click to upload or drag & drop
                       </p>
-                      <div className="flex gap-3 justify-center">
-                        <Button 
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          variant="outline"
-                          className="flex items-center gap-2"
-                        >
-                          <Upload className="w-4 h-4" />
-                          Upload Image
-                        </Button>
-                        
-                        <Button 
-                          type="button"
-                          variant="outline"
-                          onClick={handlePasteFromClipboard}
-                          className="flex items-center gap-2"
-                        >
-                          <Clipboard className="w-4 h-4" />
-                          Paste from Clipboard
-                        </Button>
-                      </div>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileUpload}
-                        className="hidden"
-                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        PNG, JPG, GIF up to 10MB
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Or paste from clipboard (Ctrl+V)
+                      </p>
+                    </label>
+                  </div>
+                  {image && (
+                    <div className="mt-4">
+                      <img src={image} alt="Preview" className="max-w-full h-32 object-cover rounded" />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setImage(undefined)}
+                        className="mt-2"
+                      >
+                        Remove Image
+                      </Button>
                     </div>
-                  </div>
+                  )}
                 </div>
-              ) : (
-                <div className="space-y-2">
-                  <img 
-                    src={image} 
-                    alt="Journal entry" 
-                    className="w-full max-h-48 object-cover rounded-lg border"
-                  />
-                  <div className="flex gap-2">
-                    <Button 
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Replace
-                    </Button>
-                    <Button 
-                      type="button"
-                      onClick={handlePasteFromClipboard}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Paste New
-                    </Button>
-                    <Button 
-                      type="button"
-                      onClick={() => setImage(undefined)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-                </div>
-              )}
-            </div>
-
-            <div>
-              <Label>Tags</Label>
-              <div className="flex gap-2 mb-2">
-                <Input
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  placeholder="Add a tag"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addTag();
-                    }
-                  }}
-                />
-                <Button type="button" onClick={addTag} variant="outline">
-                  Add
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="ml-1 text-xs"
-                    >
-                      ×
-                    </button>
-                  </Badge>
-                ))}
               </div>
             </div>
 
             <div>
-              <Label htmlFor="content">Content</Label>
+              <Label htmlFor="content">Content *</Label>
               <Textarea
                 id="content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="Write your journal entry content here..."
-                rows={8}
+                placeholder="Write your journal entry..."
+                className="min-h-[200px]"
                 required
+                onPaste={handlePaste}
               />
             </div>
 
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" className="flex-1">
-                {entry ? "Update Entry" : "Create Entry"}
-              </Button>
+            <div className="flex gap-2 justify-end">
               <Button type="button" variant="outline" onClick={onCancel}>
                 Cancel
+              </Button>
+              <Button type="submit">
+                {entry ? "Update" : "Create"} Entry
               </Button>
             </div>
           </form>
         </CardContent>
-      </Card>
-    </div>
+      </div>
+    </Card>
   );
 }
