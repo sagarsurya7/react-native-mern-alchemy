@@ -1,6 +1,7 @@
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { FileText } from "lucide-react";
+import { JournalTemplateForm } from "@/components/journal/JournalTemplateForm";
 
 const Journal2 = () => {
   return (
@@ -15,15 +16,21 @@ const Journal2 = () => {
       </div>
       
       <div className="p-6 flex justify-center">
-        <div className="max-w-2xl w-full">
-          <img 
-            src="/lovable-uploads/7f94d1f7-cfb2-4241-88fb-8ba25aee7a40.png" 
-            alt="Journal Template" 
-            className="w-full h-auto rounded-lg shadow-lg border"
-          />
-          <div className="mt-4 text-center text-gray-600">
-            <p className="text-sm">Journal Template - "The Path of Your Success"</p>
+        <div className="max-w-4xl w-full space-y-8">
+          {/* Template Image */}
+          <div className="text-center">
+            <img 
+              src="/lovable-uploads/7f94d1f7-cfb2-4241-88fb-8ba25aee7a40.png" 
+              alt="Journal Template" 
+              className="w-full max-w-2xl h-auto rounded-lg shadow-lg border mx-auto"
+            />
+            <div className="mt-4 text-gray-600">
+              <p className="text-sm">Journal Template - "The Path of Your Success"</p>
+            </div>
           </div>
+          
+          {/* Interactive Form */}
+          <JournalTemplateForm />
         </div>
       </div>
     </div>
