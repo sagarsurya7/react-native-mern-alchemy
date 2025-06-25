@@ -11,6 +11,7 @@ import DashboardFinance from "./pages/DashboardFinance";
 import Journal1 from "./pages/Journal1";
 import DailyTradeActivity from "./pages/DailyTradeActivity";
 import ForexBtcStocks from "./pages/ForexBtcStocks";
+import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
                 <Route path="/journal1" element={<Journal1 />} />
                 <Route path="/daily-trade-activity" element={<DailyTradeActivity />} />
                 <Route path="/forex-btc-stocks" element={<ForexBtcStocks />} />
+                <Route path="/reports" element={<Reports />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
