@@ -5,24 +5,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 export function JournalTemplateForm() {
   const [formData, setFormData] = useState({
     date: "",
-    timeOfDay: "",
-    currentMood: "",
-    gratefulFor: "",
-    todayGoals: "",
+    gratefulFor1: "",
+    gratefulFor2: "",
+    gratefulFor3: "",
+    todayGoals1: "",
+    todayGoals2: "",
+    todayGoals3: "",
     affirmation: "",
-    priorities: "",
+    priorities1: "",
+    priorities2: "",
+    priorities3: "",
     challenges: "",
     solutions: "",
     learnings: "",
     improvements: "",
     reflections: "",
-    tomorrowGoals: "",
+    tomorrowGoals1: "",
+    tomorrowGoals2: "",
+    tomorrowGoals3: "",
     positiveThoughts: ""
   });
 
@@ -37,199 +42,189 @@ export function JournalTemplateForm() {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-center text-2xl font-bold text-green-700">
-          The Path of Your Success - Daily Journal
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Date and Time */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="date">Date</Label>
+    <div className="max-w-4xl mx-auto">
+      <Card className="w-full bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200">
+        <CardHeader className="text-center bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-t-lg">
+          <CardTitle className="text-3xl font-bold">
+            The Path of Your Success
+          </CardTitle>
+          <p className="text-lg opacity-90">Daily Success Journal</p>
+        </CardHeader>
+        
+        <CardContent className="p-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Date */}
+            <div className="text-center">
+              <Label htmlFor="date" className="text-2xl font-bold text-gray-700">Date</Label>
               <Input
                 id="date"
                 type="date"
                 value={formData.date}
                 onChange={(e) => handleInputChange("date", e.target.value)}
-                placeholder="Select date"
-              />
-            </div>
-            <div>
-              <Label htmlFor="timeOfDay">Time of Day</Label>
-              <Select value={formData.timeOfDay} onValueChange={(value) => handleInputChange("timeOfDay", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select time of day" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="morning">Morning</SelectItem>
-                  <SelectItem value="afternoon">Afternoon</SelectItem>
-                  <SelectItem value="evening">Evening</SelectItem>
-                  <SelectItem value="night">Night</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Morning Section */}
-          <div className="space-y-4 p-4 bg-yellow-50 rounded-lg">
-            <h3 className="text-lg font-semibold text-yellow-800">Morning Reflection</h3>
-            
-            <div>
-              <Label htmlFor="currentMood">How am I feeling right now?</Label>
-              <Input
-                id="currentMood"
-                value={formData.currentMood}
-                onChange={(e) => handleInputChange("currentMood", e.target.value)}
-                placeholder="Describe your current mood and emotions"
+                className="text-center text-xl font-semibold mt-2 max-w-xs mx-auto"
               />
             </div>
 
-            <div>
-              <Label htmlFor="gratefulFor">What am I grateful for today?</Label>
+            {/* Morning Gratitude Section */}
+            <div className="bg-yellow-100 p-6 rounded-lg border-2 border-yellow-300">
+              <h2 className="text-2xl font-bold text-yellow-800 mb-4 text-center">
+                🌅 Morning Gratitude
+              </h2>
+              <p className="text-lg text-yellow-700 mb-4 text-center">What am I grateful for today?</p>
+              
+              <div className="space-y-3">
+                {[1, 2, 3].map((num) => (
+                  <div key={num} className="flex items-center gap-3">
+                    <span className="text-xl font-bold text-yellow-600 w-6">{num}.</span>
+                    <Input
+                      value={formData[`gratefulFor${num}` as keyof typeof formData]}
+                      onChange={(e) => handleInputChange(`gratefulFor${num}`, e.target.value)}
+                      placeholder={`Grateful for...`}
+                      className="flex-1 bg-white border-yellow-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Goals Section */}
+            <div className="bg-blue-100 p-6 rounded-lg border-2 border-blue-300">
+              <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center">
+                🎯 Today's Goals
+              </h2>
+              <p className="text-lg text-blue-700 mb-4 text-center">What do I want to achieve today?</p>
+              
+              <div className="space-y-3">
+                {[1, 2, 3].map((num) => (
+                  <div key={num} className="flex items-center gap-3">
+                    <span className="text-xl font-bold text-blue-600 w-6">{num}.</span>
+                    <Input
+                      value={formData[`todayGoals${num}` as keyof typeof formData]}
+                      onChange={(e) => handleInputChange(`todayGoals${num}`, e.target.value)}
+                      placeholder={`Goal ${num}...`}
+                      className="flex-1 bg-white border-blue-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Affirmation Section */}
+            <div className="bg-purple-100 p-6 rounded-lg border-2 border-purple-300">
+              <h2 className="text-2xl font-bold text-purple-800 mb-4 text-center">
+                ✨ Daily Affirmation
+              </h2>
               <Textarea
-                id="gratefulFor"
-                value={formData.gratefulFor}
-                onChange={(e) => handleInputChange("gratefulFor", e.target.value)}
-                placeholder="List 3 things you're grateful for today"
-                className="min-h-[80px]"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="todayGoals">What do I want to achieve today?</Label>
-              <Textarea
-                id="todayGoals"
-                value={formData.todayGoals}
-                onChange={(e) => handleInputChange("todayGoals", e.target.value)}
-                placeholder="List your main goals and priorities for today"
-                className="min-h-[80px]"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="affirmation">Daily Affirmation</Label>
-              <Input
-                id="affirmation"
                 value={formData.affirmation}
                 onChange={(e) => handleInputChange("affirmation", e.target.value)}
-                placeholder="Write a positive affirmation for yourself"
-              />
-            </div>
-          </div>
-
-          {/* Day Planning Section */}
-          <div className="space-y-4 p-4 bg-blue-50 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-800">Day Planning</h3>
-            
-            <div>
-              <Label htmlFor="priorities">Top 3 Priorities</Label>
-              <Textarea
-                id="priorities"
-                value={formData.priorities}
-                onChange={(e) => handleInputChange("priorities", e.target.value)}
-                placeholder="1. Most important task&#10;2. Second priority&#10;3. Third priority"
-                className="min-h-[100px]"
+                placeholder="I am capable, strong, and ready to achieve my goals today..."
+                className="w-full bg-white border-purple-300 min-h-[80px] text-center text-lg"
               />
             </div>
 
-            <div>
-              <Label htmlFor="challenges">Potential Challenges</Label>
-              <Textarea
-                id="challenges"
-                value={formData.challenges}
-                onChange={(e) => handleInputChange("challenges", e.target.value)}
-                placeholder="What obstacles might you face today?"
-                className="min-h-[80px]"
-              />
+            {/* Priorities Section */}
+            <div className="bg-green-100 p-6 rounded-lg border-2 border-green-300">
+              <h2 className="text-2xl font-bold text-green-800 mb-4 text-center">
+                ⭐ Top 3 Priorities
+              </h2>
+              
+              <div className="space-y-3">
+                {[1, 2, 3].map((num) => (
+                  <div key={num} className="flex items-center gap-3">
+                    <span className="text-xl font-bold text-green-600 w-6">{num}.</span>
+                    <Input
+                      value={formData[`priorities${num}` as keyof typeof formData]}
+                      onChange={(e) => handleInputChange(`priorities${num}`, e.target.value)}
+                      placeholder={`Priority ${num}...`}
+                      className="flex-1 bg-white border-green-300"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="solutions">Solutions & Strategies</Label>
-              <Textarea
-                id="solutions"
-                value={formData.solutions}
-                onChange={(e) => handleInputChange("solutions", e.target.value)}
-                placeholder="How will you overcome these challenges?"
-                className="min-h-[80px]"
-              />
-            </div>
-          </div>
+            {/* Evening Reflection */}
+            <div className="bg-orange-100 p-6 rounded-lg border-2 border-orange-300">
+              <h2 className="text-2xl font-bold text-orange-800 mb-6 text-center">
+                🌅 Evening Reflection
+              </h2>
+              
+              <div className="space-y-6">
+                <div>
+                  <Label className="text-lg font-semibold text-orange-700">What did I learn today?</Label>
+                  <Textarea
+                    value={formData.learnings}
+                    onChange={(e) => handleInputChange("learnings", e.target.value)}
+                    placeholder="Today I learned..."
+                    className="mt-2 bg-white border-orange-300 min-h-[80px]"
+                  />
+                </div>
 
-          {/* Evening Reflection Section */}
-          <div className="space-y-4 p-4 bg-purple-50 rounded-lg">
-            <h3 className="text-lg font-semibold text-purple-800">Evening Reflection</h3>
-            
-            <div>
-              <Label htmlFor="learnings">What did I learn today?</Label>
-              <Textarea
-                id="learnings"
-                value={formData.learnings}
-                onChange={(e) => handleInputChange("learnings", e.target.value)}
-                placeholder="Reflect on new insights, lessons, or discoveries"
-                className="min-h-[80px]"
-              />
-            </div>
+                <div>
+                  <Label className="text-lg font-semibold text-orange-700">What could I have done better?</Label>
+                  <Textarea
+                    value={formData.improvements}
+                    onChange={(e) => handleInputChange("improvements", e.target.value)}
+                    placeholder="I could improve by..."
+                    className="mt-2 bg-white border-orange-300 min-h-[80px]"
+                  />
+                </div>
 
-            <div>
-              <Label htmlFor="improvements">What could I have done better?</Label>
-              <Textarea
-                id="improvements"
-                value={formData.improvements}
-                onChange={(e) => handleInputChange("improvements", e.target.value)}
-                placeholder="Areas for improvement and growth"
-                className="min-h-[80px]"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="reflections">Overall reflections on the day</Label>
-              <Textarea
-                id="reflections"
-                value={formData.reflections}
-                onChange={(e) => handleInputChange("reflections", e.target.value)}
-                placeholder="How do you feel about today? What went well?"
-                className="min-h-[100px]"
-              />
-            </div>
-          </div>
-
-          {/* Tomorrow Planning Section */}
-          <div className="space-y-4 p-4 bg-green-50 rounded-lg">
-            <h3 className="text-lg font-semibold text-green-800">Planning Tomorrow</h3>
-            
-            <div>
-              <Label htmlFor="tomorrowGoals">Tomorrow's Goals</Label>
-              <Textarea
-                id="tomorrowGoals"
-                value={formData.tomorrowGoals}
-                onChange={(e) => handleInputChange("tomorrowGoals", e.target.value)}
-                placeholder="What do you want to achieve tomorrow?"
-                className="min-h-[80px]"
-              />
+                <div>
+                  <Label className="text-lg font-semibold text-orange-700">Overall reflections on today</Label>
+                  <Textarea
+                    value={formData.reflections}
+                    onChange={(e) => handleInputChange("reflections", e.target.value)}
+                    placeholder="Today was..."
+                    className="mt-2 bg-white border-orange-300 min-h-[100px]"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="positiveThoughts">Positive thoughts to end the day</Label>
-              <Textarea
-                id="positiveThoughts"
-                value={formData.positiveThoughts}
-                onChange={(e) => handleInputChange("positiveThoughts", e.target.value)}
-                placeholder="End with gratitude and positive mindset"
-                className="min-h-[80px]"
-              />
-            </div>
-          </div>
+            {/* Tomorrow's Planning */}
+            <div className="bg-pink-100 p-6 rounded-lg border-2 border-pink-300">
+              <h2 className="text-2xl font-bold text-pink-800 mb-4 text-center">
+                🚀 Tomorrow's Goals
+              </h2>
+              
+              <div className="space-y-3 mb-6">
+                {[1, 2, 3].map((num) => (
+                  <div key={num} className="flex items-center gap-3">
+                    <span className="text-xl font-bold text-pink-600 w-6">{num}.</span>
+                    <Input
+                      value={formData[`tomorrowGoals${num}` as keyof typeof formData]}
+                      onChange={(e) => handleInputChange(`tomorrowGoals${num}`, e.target.value)}
+                      placeholder={`Tomorrow's goal ${num}...`}
+                      className="flex-1 bg-white border-pink-300"
+                    />
+                  </div>
+                ))}
+              </div>
 
-          <div className="flex justify-center pt-6">
-            <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-8 py-2">
-              Save Journal Entry
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+              <div>
+                <Label className="text-lg font-semibold text-pink-700">Positive thoughts to end the day</Label>
+                <Textarea
+                  value={formData.positiveThoughts}
+                  onChange={(e) => handleInputChange("positiveThoughts", e.target.value)}
+                  placeholder="I am grateful for today and excited for tomorrow because..."
+                  className="mt-2 bg-white border-pink-300 min-h-[80px]"
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="text-center pt-6">
+              <Button 
+                type="submit" 
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-12 py-3 text-lg font-bold rounded-full shadow-lg transform transition hover:scale-105"
+              >
+                💾 Save My Success Journey
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
