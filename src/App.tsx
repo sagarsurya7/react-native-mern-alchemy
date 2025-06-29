@@ -14,6 +14,7 @@ import Journal3 from "./pages/Journal3";
 import DailyTradeActivity from "./pages/DailyTradeActivity";
 import ForexBtcStocks from "./pages/ForexBtcStocks";
 import Reports from "./pages/Reports";
+import WebSocket from "./pages/WebSocket";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
                 <Route path="/daily-trade-activity" element={<DailyTradeActivity />} />
                 <Route path="/forex-btc-stocks" element={<ForexBtcStocks />} />
                 <Route path="/reports" element={<Reports />} />
+                <Route path="/websocket" element={<WebSocket />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
