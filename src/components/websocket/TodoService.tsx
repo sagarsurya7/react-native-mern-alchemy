@@ -31,7 +31,7 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState('');
   const [isConnected, setIsConnected] = useState(false);
-  const wsRef = useRef<WebSocket | null>(null);
+  const wsRef = useRef<MockWebSocket | null>(null);
   const { toast } = useToast();
 
   const colorClasses = {
@@ -50,47 +50,47 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
   };
 
   useEffect(() => {
-    // Create WebSocket connection (using mock WebSocket for demo)
     const connectWebSocket = () => {
       try {
-        // In a real implementation, you would connect to an actual WebSocket server
-        // For demo purposes, we'll simulate WebSocket communication between services
         const ws = new MockWebSocket(serviceId);
         wsRef.current = ws;
 
-        ws.onopen = () => {
+        ws.addEventListener('open', () => {
           setIsConnected(true);
+          console.log(`${title} WebSocket connected`);
           toast({
             title: "WebSocket Connected",
             description: `${title} is now connected`,
           });
-        };
+        });
 
-        ws.onmessage = (event) => {
+        ws.addEventListener('message', (event: MessageEvent) => {
           const message: WebSocketMessage = JSON.parse(event.data);
+          console.log(`${title} received message:`, message);
           
-          // Only process messages from other services
           if (message.sourceService !== serviceId) {
             handleWebSocketMessage(message);
           }
-        };
+        });
 
-        ws.onclose = () => {
+        ws.addEventListener('close', () => {
           setIsConnected(false);
+          console.log(`${title} WebSocket disconnected`);
           toast({
             title: "WebSocket Disconnected",
             description: `${title} connection lost`,
             variant: "destructive"
           });
-        };
+        });
 
-        ws.onerror = () => {
+        ws.addEventListener('error', () => {
+          console.error(`${title} WebSocket error`);
           toast({
             title: "WebSocket Error",
             description: `Error in ${title} connection`,
             variant: "destructive"
           });
-        };
+        });
 
       } catch (error) {
         console.error('WebSocket connection failed:', error);
@@ -107,12 +107,20 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
   }, [serviceId, title, toast]);
 
   const handleWebSocketMessage = (message: WebSocketMessage) => {
+    console.log(`${title} handling message:`, message);
     switch (message.type) {
       case 'ADD_TODO':
-        setTodos(prev => [...prev, message.payload]);
-        toast({
-          title: "Todo Added",
-          description: `New todo from ${message.sourceService}: ${message.payload.text}`,
+        setTodos(prev => {
+          const exists = prev.some(todo => todo.id === message.payload.id);
+          if (!exists) {
+            console.log(`${title} adding todo from ${message.sourceService}:`, message.payload);
+            toast({
+              title: "Todo Added",
+              description: `New todo from ${message.sourceService}: ${message.payload.text}`,
+            });
+            return [...prev, message.payload];
+          }
+          return prev;
         });
         break;
       case 'TOGGLE_TODO':
@@ -125,10 +133,15 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
         );
         break;
       case 'DELETE_TODO':
-        setTodos(prev => prev.filter(todo => todo.id !== message.payload.id));
-        toast({
-          title: "Todo Deleted",
-          description: `Todo deleted from ${message.sourceService}`,
+        setTodos(prev => {
+          const filtered = prev.filter(todo => todo.id !== message.payload.id);
+          if (filtered.length !== prev.length) {
+            toast({
+              title: "Todo Deleted",
+              description: `Todo deleted from ${message.sourceService}`,
+            });
+          }
+          return filtered;
         });
         break;
       case 'SYNC_TODOS':
@@ -138,7 +151,8 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
   };
 
   const sendWebSocketMessage = (message: WebSocketMessage) => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+    if (wsRef.current && wsRef.current.readyState === MockWebSocket.OPEN) {
+      console.log(`${title} sending message:`, message);
       wsRef.current.send(JSON.stringify(message));
     }
   };
@@ -146,17 +160,17 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
   const addTodo = () => {
     if (newTodo.trim()) {
       const todo: Todo = {
-        id: `${serviceId}-${Date.now()}`,
+        id: `${serviceId}-${Date.now()}-${Math.random()}`,
         text: newTodo.trim(),
         completed: false,
         createdAt: Date.now(),
         serviceId
       };
 
+      console.log(`${title} adding local todo:`, todo);
       setTodos(prev => [...prev, todo]);
       setNewTodo('');
 
-      // Send to other services via WebSocket
       sendWebSocketMessage({
         type: 'ADD_TODO',
         payload: todo,
@@ -171,7 +185,6 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
         if (todo.id === id) {
           const updatedTodo = { ...todo, completed: !todo.completed };
           
-          // Send update to other services
           sendWebSocketMessage({
             type: 'TOGGLE_TODO',
             payload: { id, completed: updatedTodo.completed },
@@ -188,7 +201,6 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
   const deleteTodo = (id: string) => {
     setTodos(prev => prev.filter(todo => todo.id !== id));
     
-    // Send delete to other services
     sendWebSocketMessage({
       type: 'DELETE_TODO',
       payload: { id },
@@ -228,7 +240,7 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
               key={todo.id}
               className={`flex items-center gap-2 p-3 rounded-lg border ${
                 todo.completed ? 'bg-gray-50' : 'bg-white'
-              } ${todo.serviceId !== serviceId ? 'border-dashed border-2' : ''}`}
+              } ${todo.serviceId !== serviceId ? 'border-dashed border-2 bg-yellow-50' : ''}`}
             >
               <Button
                 variant="ghost"
@@ -266,44 +278,63 @@ export const TodoService: React.FC<TodoServiceProps> = ({ serviceId, title, colo
         </div>
 
         <div className="text-sm text-gray-500">
-          Total: {todos.length} | Completed: {todos.filter(t => t.completed).length}
+          Total: {todos.length} | Completed: {todos.filter(t => t.completed).length} | 
+          Local: {todos.filter(t => t.serviceId === serviceId).length} | 
+          Remote: {todos.filter(t => t.serviceId !== serviceId).length}
         </div>
       </CardContent>
     </Card>
   );
 };
 
-// Mock WebSocket class for demonstration
+// Mock WebSocket class that properly implements WebSocket interface
 class MockWebSocket extends EventTarget {
-  readyState: number = WebSocket.CONNECTING;
+  static CONNECTING = 0;
+  static OPEN = 1;
+  static CLOSING = 2;
+  static CLOSED = 3;
+  
   static connections: MockWebSocket[] = [];
+  
+  readyState: number = MockWebSocket.CONNECTING;
   serviceId: string;
-
+  
   constructor(serviceId: string) {
     super();
     this.serviceId = serviceId;
     MockWebSocket.connections.push(this);
     
-    // Simulate connection
+    console.log(`MockWebSocket created for ${serviceId}, total connections: ${MockWebSocket.connections.length}`);
+    
+    // Simulate connection after a short delay
     setTimeout(() => {
-      this.readyState = WebSocket.OPEN;
+      this.readyState = MockWebSocket.OPEN;
+      console.log(`MockWebSocket opened for ${serviceId}`);
       this.dispatchEvent(new Event('open'));
-    }, 1000);
+    }, 500);
   }
 
   send(data: string) {
-    // Broadcast to all other connections
-    MockWebSocket.connections
-      .filter(conn => conn !== this && conn.readyState === WebSocket.OPEN)
-      .forEach(conn => {
-        setTimeout(() => {
-          conn.dispatchEvent(new MessageEvent('message', { data }));
-        }, 100);
-      });
+    console.log(`MockWebSocket ${this.serviceId} sending:`, data);
+    
+    // Broadcast to all other active connections
+    const activeConnections = MockWebSocket.connections.filter(
+      conn => conn !== this && conn.readyState === MockWebSocket.OPEN
+    );
+    
+    console.log(`Broadcasting to ${activeConnections.length} other connections`);
+    
+    activeConnections.forEach(conn => {
+      setTimeout(() => {
+        console.log(`Delivering message to ${conn.serviceId}`);
+        conn.dispatchEvent(new MessageEvent('message', { data }));
+      }, 100);
+    });
   }
 
   close() {
-    this.readyState = WebSocket.CLOSED;
+    console.log(`MockWebSocket closing for ${this.serviceId}`);
+    this.readyState = MockWebSocket.CLOSED;
     MockWebSocket.connections = MockWebSocket.connections.filter(conn => conn !== this);
     this.dispatchEvent(new Event('close'));
   }
